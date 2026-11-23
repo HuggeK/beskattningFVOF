@@ -12,6 +12,8 @@ beskattningskurva när delägarna behöver deklarera.
 > [Skatteverket](https://www.skatteverket.se) för aktuella skatteregler.** Varje
 > delägare ansvarar själv för sin deklaration.
 
+**▶ Kör verktyget direkt i webbläsaren:** <https://huggek.github.io/beskattningFVOF/lab/index.html?path=beskattning.ipynb>
+
 ## Kort om hur det fungerar
 
 Föreningen betalar ingen inkomstskatt själv. I stället äger varje delägarfastighet
@@ -66,7 +68,10 @@ fiskekort.
 ![Beskattningskurvan med exempeldata (resultat 28 900 kr)](docs/beskattningskurva.png)
 
 - **Övre diagrammet:** den röda trappan visar hur många som *ska* deklarera vid ett
-  visst resultat. Den blå linjen visar hur mycket som tas upp totalt.
+  visst resultat. Den blå linjen visar hur mycket som tas upp totalt. Det **lila
+  fältet** visar den uppskattade **extra skatten totalt för medlemmarna** vid varje
+  resultatnivå, som ett spann från låg till hög skattesats. Den lila linjen är den
+  troliga nivån. Vid årets resultat skrivs beloppet ut.
   - I det **gröna fältet** behöver ingen deklarera. I exempelbilden gäller det så
     länge resultatet är under 8 931 kr. Gränsen styrs av den största andelen.
   - I det **orange fältet** har föreningen underskott, och alla med näringsfastighet
@@ -85,7 +90,6 @@ fiskekort.
   mycket varje fastighet skulle deklarera vid årets resultat** (andel × resultat)
   och om den måste.
 - **Scenarier:** i notebooken jämför du egna resultat med listan `SCENARIER`.
-  Där finns också ett **reglage** för att prova olika resultat (kräver `ipywidgets`).
 - **I utskicket** får varje fastighet kolumnen `naring_deklarera_fran_resultat`.
   Den visar från vilket resultat för föreningen ägaren måste deklarera.
 
@@ -187,15 +191,13 @@ fastigheten hamnar över eller under gränsen. Det som påverkar är fastigheten
 **typ** (se ovan) och föreningens resultat. Den som ändå deklarerar andelen tar
 upp den i sin näringsverksamhet tillsammans med sina egna intäkter och kostnader.
 
-Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget
-(`pip install -r requirements.txt`).
+Lokalt kräver notebooken Python 3 och `matplotlib` (`pip install -r requirements.txt`).
 
 ### Kör i webbläsaren utan installation
 
 [![JupyterLite](https://jupyterlite.rtfd.io/en/latest/_static/badge.svg)](https://huggek.github.io/beskattningFVOF/lab/index.html?path=beskattning.ipynb)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/HuggeK/beskattningFVOF/HEAD?labpath=beskattning.ipynb)
 
-- **JupyterLite** (rekommenderas) kör hela notebooken i webbläsaren och startar på
+- **JupyterLite på GitHub Pages** kör hela notebooken i webbläsaren och startar på
   några sekunder: **<https://huggek.github.io/beskattningFVOF/lab/index.html?path=beskattning.ipynb>**.
   Inget körs på någon server, och era siffror stannar i webbläsaren. Byt ut
   `data/andelar.csv` genom att dra in er egen matrikel i filbläddraren till vänster,
@@ -203,13 +205,6 @@ Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget
   Ladda ner `utdata/` (högerklicka → *Download*) när du är klar. Sidan byggs
   automatiskt av GitHub Actions (`.github/workflows/jupyterlite.yml`) vid varje
   ändring på `main`.
-- **Binder** (mybinder.org) startar notebooken i webbläsaren direkt från GitHub.
-  Klicka på knappen ovan. Första starten kan ta några minuter. Ladda upp er egen
-  matrikel som `data/andelar.csv`, fyll i `BOKSLUT` och kör alla celler. Ändringar
-  sparas **inte**, så ladda ner `utdata/` innan du stänger. För en annan förening:
-  forka repot och byt `HuggeK/beskattningFVOF` i länken.
-- **Google Colab** kan också öppna notebooken från GitHub, men kräver ett
-  Google-konto.
 
 **Moms:** ta beloppen direkt från resultaträkningen. Där är de redan rätt. Hos en
 momsregistrerad förening är de utan moms. Hos en förening som inte är
