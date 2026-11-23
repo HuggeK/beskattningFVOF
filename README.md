@@ -226,6 +226,40 @@ gäller för hen.
 | `driftsbidrag` | Uttaxering eller avgifter från delägarna | **Nej**, räknas bort |
 | `utdelning` | Utdelning till delägarna | **Nej**, räknas bort |
 
+#### Med eller utan moms?
+
+**Kort regel:** skriv beloppet precis som det står i underlaget du kopierar från.
+Ange sedan i `inkl_moms` om momsen ingår, och i `moms_sats` vilken sats som
+gäller. Notebooken räknar fram rätt belopp utifrån `MOMSREGISTRERAD`.
+
+**Momsregistrerad förening (som vår):** delägarnas underlag ska vara **exklusive moms**.
+
+| Du kopierar från … | `belopp` | `inkl_moms` | `moms_sats` |
+|---|---|---|---|
+| **Resultaträkningen i bokslutet** (rekommenderas). Där är intäkter och kostnader redan bokförda utan moms, och momsen ligger på egna momskonton | som det står | `nej` | satsen (25, 12, 6) eller 0 |
+| Kvitton, fakturor, Swish- eller kassasummor (bruttobelopp) | som det står | `ja` | satsen, så räknar notebooken bort momsen |
+| Poster utan moms, till exempel försäkring, bankavgifter, ränta och bidrag | som det står | `nej` | `0` |
+
+**Inte momsregistrerad förening:** fiskekorten säljs utan moms, och momsen på
+inköp är en **kostnad** för föreningen. Kostnaderna ska därför vara **inklusive
+moms**, alltså det ni faktiskt betalade.
+
+| Du kopierar från … | `belopp` | `inkl_moms` | `moms_sats` |
+|---|---|---|---|
+| Intäkter (fiskekort m.m.) | det ni fick in | `ja` eller `nej` (spelar ingen roll) | `0` |
+| Kostnader, det ni betalade | som det står | `ja` | satsen |
+| Kostnader angivna exklusive moms | som det står | `nej` | satsen, så lägger notebooken till momsen |
+
+**Investeringar** (`data/investeringar.csv`) fylls i på samma sätt. För en
+momsregistrerad förening ska anskaffningsvärdet vara exklusive moms. Det påverkar
+också gränsen för inventarier av mindre värde.
+
+**Kontroll:** summan av intäktsposterna i notebooken (utan `driftsbidrag`) ska
+stämma med resultaträkningens intäkter. Kostnaderna ska stämma på samma sätt, med
+undantag för poster som flyttats till `investeringar.csv`. Notebooken skriver
+också ut föreningens utgående och ingående moms. Den kan jämföras med
+momsdeklarationerna för året.
+
 ### `data/investeringar.csv`
 
 | Kolumn | Beskrivning |
