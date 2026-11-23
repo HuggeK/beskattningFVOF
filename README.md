@@ -78,7 +78,8 @@ fiskekort.
   fler deklarera om resultatet hamnar strax *under* en brytpunkt. Notebooken
   skriver också ut en tabell med alla intervall och visar hur långt årets resultat
   ligger från närmaste brytpunkt.
-- **Nedre diagrammet:** den vågräta axeln är **föreningens totala resultat**.
+- **Nedre diagrammet:** den vågräta axeln är **föreningens totala resultat**, samma
+  axel som i diagrammet ovan, så brytpunkterna hamnar rakt under varandra.
   För varje fastighet visar grått de resultat där fastigheten är under gränsen,
   och rött de resultat där den måste deklarera. Kolumnen till höger visar **hur
   mycket varje fastighet skulle deklarera vid årets resultat** (andel × resultat)
