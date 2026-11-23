@@ -1,6 +1,9 @@
 # beskattningFVOF
 
-Underlag för delägarnas deklarationer i **Törn och Törngöls Fiskevårdsområdesförening (FVOF)**.
+Ett verktyg för **fiskevårdsområdesföreningar (FVOF)** och andra **delägarbeskattade
+samfälligheter**, till exempel viltvårdsområden och vägsamfälligheter. Det räknar ut
+vad varje delägarfastighet ska ta upp i deklarationen och visar med en
+beskattningskurva när delägarna behöver deklarera.
 
 > [!WARNING]
 > **Detta är inte skatterådgivning.** Texten är en **sammanfattning skriven av en
@@ -34,8 +37,8 @@ fiskekort.
 
 - **Övre diagrammet:** den röda trappan visar hur många som *ska* deklarera vid ett
   visst resultat. Den blå linjen visar hur mycket som tas upp totalt.
-  - I det **gröna fältet** behöver ingen deklarera. Med våra andelar gäller det så
-    länge resultatet är under 8 931 kr.
+  - I det **gröna fältet** behöver ingen deklarera. I exempelbilden gäller det så
+    länge resultatet är under 8 931 kr. Gränsen styrs av den största andelen.
   - I det **orange fältet** har föreningen underskott, och alla med näringsfastighet
     *får* ta upp sin andel.
 - **Nedre diagrammet:** för varje fastighet visas från vilket resultat just den
@@ -85,35 +88,45 @@ flowchart TD
 Du behöver **bara några summor ur bokslutets resultaträkning**, inga enskilda
 transaktioner.
 
-1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som decimaltecken.
-   Du kan också använda en tabell med semikolon och kolumnerna
-   `fastighet;andel;agare;antal_agare`, där bara `andel` krävs.
-2. **`data/bokslut.csv`**: en rad per år med summorna från resultaträkningen:
+1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som
+   decimaltecken. Vill du ha med fastighetsbeteckningar använder du två kolumner
+   med semikolon, `fastighet;andel`. Filen i repot är ett exempel. Byt ut den mot
+   er förenings andelar.
+2. **Bokslutets siffror** fyller du i direkt i notebookens första kodcell, i
+   `BOKSLUT`. Ta dem från resultaträkningen:
 
-   | Kolumn | Ta från resultaträkningen | Krävs |
-   |---|---|---|
-   | `ar` | Räkenskapsåret | Ja |
-   | `intakter` | Summa rörelseintäkter (fiskekort, bidrag m.m.) | Ja |
-   | `kostnader` | Summa rörelsekostnader, **inklusive avskrivningar** | Ja |
-   | `ranteintakter` | Finansiella intäkter (ränta, utdelning) | Nej |
-   | `ranteutgifter` | Finansiella kostnader | Nej |
-   | `varav_uttaxering` | Uttaxering eller medlemsavgifter från delägarna, om den ingår i `intakter`. Räknas bort | Nej |
+   ```python
+   AR = 2026
+   BOKSLUT = {
+       "intakter": 95000,        # summa rörelseintäkter (fiskekort, bidrag m.m.)
+       "kostnader": 58000,       # summa rörelsekostnader inkl. avskrivningar
+       "ranteintakter": 400,     # finansiella intäkter, behövs för KU73-kontrollen
+       "ranteutgifter": 0,       # finansiella kostnader
+       "varav_uttaxering": 8500, # avgifter från delägarna som ingår i intäkterna, räknas bort
+   }
+   ```
 
-3. Ange året och eventuella scenarier i notebookens första kodcell och kör alla
-   celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
+   **Intäkter och kostnader krävs.** Delägare med näringsfastighet ska ta upp sin
+   andel av intäkterna och sin andel av kostnaderna var för sig, så utskicket
+   visar båda. Resultatet räknas fram ur dem.
+3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
    underlaget i `utdata/underlag_<år>.csv`, som kan skickas ut till delägarna.
+
+**Flera ägare till samma fastighet:** gränserna gäller per fastighet, inte per
+ägare. Verktyget räknar därför bara per fastighet. Har en fastighet flera ägare
+delar de på fastighetens andel.
 
 Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget.
 
 **Moms:** ta beloppen direkt från resultaträkningen. Där är de redan rätt. Hos en
-momsregistrerad förening, som vår, är de utan moms. Hos en förening som inte är
+momsregistrerad förening är de utan moms. Hos en förening som inte är
 momsregistrerad ingår momsen i kostnaderna, och så ska det vara.
 
 **Vad blir förenklat?** Alla intäkter behandlas lika, och bokslutets avskrivningar
 används. För näringsfastigheter blir det rätt. Den som vill göra något annat,
 till exempel en egen avskrivningsplan, får räkna själv utifrån sin andel. För
 privatbostäder räknas alla intäkter som upplåtelseintäkter. Det kan ge något för
-höga siffror, men med föreningens storlek hamnar de ändå långt under gränsen.
+höga siffror, men i en normalstor förening hamnar de ändå långt under gränsen.
 
 ## Bra att veta
 
@@ -134,7 +147,8 @@ höga siffror, men med föreningens storlek hamnar de ändå långt under gräns
 - **KU73** gäller bara **föreningens ränteintäkter**, inte fiskekort och inte
   utdelning till medlemmarna. Den behövs bara om en privatbostads andel av räntan
   överstiger 1 500 kr. Notebooken kontrollerar det. KU73 lämnas digitalt senast
-  31 januari, med ägarens personnummer.
+  31 januari, med ägarens personnummer. Har fastigheten flera ägare delas beloppet
+  lika på en KU73 per ägare.
 - **Fastighetstyp.** Föreningen behöver inte hålla reda på vilken typ av fastighet
   varje delägare har. Underlaget visar utfallet för båda typerna, och delägaren
   läser det som gäller för hen.
