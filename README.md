@@ -93,26 +93,22 @@ transaktioner.
    med semikolon, `fastighet;andel`. Filen i repot är ett exempel. Byt ut den mot
    er förenings andelar.
 2. **Bokslutets siffror** fyller du i direkt i notebookens första kodcell, i
-   `BOKSLUT`. **Det räcker med årets resultat:**
+   `BOKSLUT`. Ta dem från resultaträkningen:
 
    ```python
    AR = 2026
    BOKSLUT = {
-       "resultat": 28900,        # årets resultat
-       "intakter": None,         # frivilligt: summa rörelseintäkter
-       "kostnader": None,        # frivilligt: summa rörelsekostnader inkl. avskrivningar
-       "ranteintakter": 0,       # frivilligt: behövs för KU73-kontrollen
-       "ranteutgifter": 0,       # frivilligt
-       "varav_uttaxering": 0,    # frivilligt: avgifter från delägarna som ingår ovan
+       "intakter": 95000,        # summa rörelseintäkter (fiskekort, bidrag m.m.)
+       "kostnader": 58000,       # summa rörelsekostnader inkl. avskrivningar
+       "ranteintakter": 400,     # finansiella intäkter, behövs för KU73-kontrollen
+       "ranteutgifter": 0,       # finansiella kostnader
+       "varav_uttaxering": 8500, # avgifter från delägarna som ingår i intäkterna, räknas bort
    }
    ```
 
-   Resultatet räcker för beskattningskurvan och för att se vem som ska deklarera.
-   Fyll också i intäkter och kostnader om utskicket ska visa varje fastighets
-   andel av dem. Skatteverket beskriver att näringsfastigheter redovisar intäkter
-   och kostnader var för sig. Med bara resultatet visar underlaget för
-   privatbostäder i stället hur stora föreningens intäkter får bli innan just den
-   fastigheten behöver deklarera.
+   **Intäkter och kostnader krävs.** Delägare med näringsfastighet ska ta upp sin
+   andel av intäkterna och sin andel av kostnaderna var för sig, så utskicket
+   visar båda. Resultatet räknas fram ur dem.
 3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
    underlaget i `utdata/underlag_<år>.csv`, som kan skickas ut till delägarna.
 
