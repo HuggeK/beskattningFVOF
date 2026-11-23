@@ -41,6 +41,13 @@ fiskekort.
     länge resultatet är under 8 931 kr. Gränsen styrs av den största andelen.
   - I det **orange fältet** har föreningen underskott, och alla med näringsfastighet
     *får* ta upp sin andel.
+- **Röda streckade linjer** markerar **brytpunkterna**, alltså de resultat där
+  ytterligare fastigheter måste börja deklarera. Etiketten visar resultatet och
+  hur antalet ändras, till exempel `44 712 kr 4→6`. Om föreningen kan styra årets
+  resultat, genom att tidigarelägga en utgift eller sätta fiskekortspriset, slipper
+  fler deklarera om resultatet hamnar strax *under* en brytpunkt. Notebooken
+  skriver också ut en tabell med alla intervall och visar hur långt årets resultat
+  ligger från närmaste brytpunkt.
 - **Nedre diagrammet:** för varje fastighet visas från vilket resultat just den
   måste deklarera (rött) och var den ligger under gränsen (grått).
 - **Scenarier:** i notebooken jämför du egna resultat med listan `SCENARIER`.
