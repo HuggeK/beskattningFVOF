@@ -1,3 +1,6 @@
 utdata/
 .ipynb_checkpoints/
 __pycache__/
+content/
+dist/
+.jupyterlite.doit.db

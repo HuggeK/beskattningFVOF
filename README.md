@@ -192,8 +192,17 @@ Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget
 
 ### Kör i webbläsaren utan installation
 
+[![JupyterLite](https://jupyterlite.rtfd.io/en/latest/_static/badge.svg)](https://huggek.github.io/beskattningFVOF/lab/index.html?path=beskattning.ipynb)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/HuggeK/beskattningFVOF/HEAD?labpath=beskattning.ipynb)
 
+- **JupyterLite** (rekommenderas) kör hela notebooken i webbläsaren och startar på
+  några sekunder: **<https://huggek.github.io/beskattningFVOF/lab/index.html?path=beskattning.ipynb>**.
+  Inget körs på någon server, och era siffror stannar i webbläsaren. Byt ut
+  `data/andelar.csv` genom att dra in er egen matrikel i filbläddraren till vänster,
+  fyll i `BOKSLUT` och välj *Run → Run All Cells*. Ändringar sparas i webbläsaren.
+  Ladda ner `utdata/` (högerklicka → *Download*) när du är klar. Sidan byggs
+  automatiskt av GitHub Actions (`.github/workflows/jupyterlite.yml`) vid varje
+  ändring på `main`.
 - **Binder** (mybinder.org) startar notebooken i webbläsaren direkt från GitHub.
   Klicka på knappen ovan. Första starten kan ta några minuter. Ladda upp er egen
   matrikel som `data/andelar.csv`, fyll i `BOKSLUT` och kör alla celler. Ändringar
