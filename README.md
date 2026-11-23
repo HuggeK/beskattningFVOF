@@ -30,11 +30,11 @@ verktyget räknar ut.
 **Indata 1: `data/andelar.csv`.** Bara `andel` krävs.
 
 ```
-fastighet;andel;typ;agare
-Byn 1:3;0,167971461;naring;Anna Andersson (1/2), Bo Berg (1/2)
-Byn 2:7;0,128922348;privat;Cecilia Ek
-Byn 4:1;0,065191174;naring;Skog AB
-Byn 5:2;0,033548309;;Anna Andersson
+fastighet;andel;typ
+Byn 1:3;0,167971461;naring
+Byn 2:7;0,128922348;privat
+Byn 4:1;0,065191174;naring
+Byn 5:2;0,033548309;
 ```
 
 **Indata 2: bokslutets siffror**, ifyllda i notebooken:
@@ -50,14 +50,10 @@ BOKSLUT = {"intakter": 95000, "kostnader": 58000, "ranteintakter": 400,
 
 | Fastighet | Andel | Intäkter | Kostnader | Netto | Status | Måste deklarera från föreningsresultat |
 |---|---|---|---|---|---|---|
-| Byn 1:3 | 16,80 % | 14 597 kr | 9 742 kr | **4 854 kr** | SKA deklarera (2 427 kr var för Anna och Bo) | 8 931 kr |
+| Byn 1:3 | 16,80 % | 14 597 kr | 9 742 kr | **4 854 kr** | SKA deklarera (har fastigheten två ägare tar båda upp 2 427 kr) | 8 931 kr |
 | Byn 2:7 | 12,89 % | 11 203 kr | 7 477 kr | 3 726 kr | Privatbostad, inget att deklarera | – |
 | Byn 4:1 | 6,52 % | 5 665 kr | 3 781 kr | **1 884 kr** | SKA deklarera | 23 010 kr |
 | Byn 5:2 | 3,35 % | 2 915 kr | 1 946 kr | 970 kr | Behöver inte (under 1 500 kr) | 44 712 kr |
-
-**Per person** (`utdata/per_person_2026.csv`): Anna Andersson tar upp 2 427 kr,
-eftersom Byn 5:2 är under gränsen. Bo Berg tar upp 2 427 kr och Skog AB 1 884 kr.
-För varje person visas också en uppskattad skatt som ett spann.
 
 ## Beskattningskurvan
 
@@ -82,7 +78,8 @@ fiskekort.
   fler deklarera om resultatet hamnar strax *under* en brytpunkt. Notebooken
   skriver också ut en tabell med alla intervall och visar hur långt årets resultat
   ligger från närmaste brytpunkt.
-- **Nedre diagrammet:** den vågräta axeln är **föreningens totala resultat**.
+- **Nedre diagrammet:** den vågräta axeln är **föreningens totala resultat**, samma
+  axel som i diagrammet ovan, så brytpunkterna hamnar rakt under varandra.
   För varje fastighet visar grått de resultat där fastigheten är under gränsen,
   och rött de resultat där den måste deklarera. Kolumnen till höger visar **hur
   mycket varje fastighet skulle deklarera vid årets resultat** (andel × resultat)
@@ -145,11 +142,10 @@ transaktioner.
    rubrikrad:
 
    ```
-   fastighet;andel;typ;agare
-   Byn 1:3;0,1679;naring;Anna Andersson (1/2), Bo Berg (1/2)
-   Byn 2:7;0,0652;privat;Cecilia Ek
-   Byn 4:1;0,0335;;Anna Andersson
-   Byn 5:2;0,0121;;Skog AB
+   fastighet;andel;typ
+   Byn 1:3;0,1679;naring
+   Byn 2:7;0,0652;privat
+   Byn 4:1;0,0335;
    ```
 
    - `fastighet` är frivillig.
@@ -159,11 +155,6 @@ transaktioner.
      50 000 kr. Om några av de största andelarna är privatbostäder hamnar alltså
      fler under gränsen. Okänd typ räknas som näring, vilket är det strängaste
      fallet, och utskicket visar då utfallet för båda typerna.
-   - `agare` är frivillig och ger en sammanställning per person. Flera ägare
-     skrivs med komma emellan, med ägarandel inom parentes, till exempel `(1/2)`,
-     `(0,5)` eller `(50 %)`. Utan ägarandel delas fastigheten lika. Äger en person
-     flera fastigheter skriver du samma namn på varje rad, så summeras allt
-     per person. Gränsen på 1 500 kr prövas ändå per fastighet.
 2. **Bokslutets siffror** fyller du i direkt i notebookens första kodcell, i
    `BOKSLUT`. Ta dem från resultaträkningen:
 
@@ -181,9 +172,8 @@ transaktioner.
    **Intäkter och kostnader krävs.** Delägare med näringsfastighet ska ta upp sin
    andel av intäkterna och sin andel av kostnaderna var för sig, så utskicket
    visar båda. Resultatet räknas fram ur dem.
-3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png`,
-   underlaget per fastighet i `utdata/underlag_<år>.csv` och sammanställningen
-   per ägare i `utdata/per_person_<år>.csv`.
+3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
+   underlaget per fastighet i `utdata/underlag_<år>.csv`.
 
 **Gränsen gäller fastighetens andel av föreningens resultat.** Gränsen på 1 500 kr
 jämförs med *fastighetens andel av föreningens* intäkter minus kostnader. Ägarens
@@ -207,9 +197,9 @@ höga siffror, men i en normalstor förening hamnar de ändå långt under grän
 
 ## Uppskattad extra skatt
 
-Notebooken summerar hur mycket varje ägare ska ta upp och uppskattar vad det kostar
-i skatt, både per ägare och för alla medlemmar tillsammans. Eftersom skatten beror
-på varje ägares egen situation visas den som ett **spann**. Satserna ändras i
+Notebooken summerar hur mycket varje fastighet ska ta upp och uppskattar vad det
+kostar i skatt, både per fastighet och för alla medlemmar tillsammans. Eftersom
+skatten beror på varje ägares egen situation visas den som ett **spann**. Satserna ändras i
 `SKATTESATS`.
 
 | Nivå | Sats | Ungefär vem |
