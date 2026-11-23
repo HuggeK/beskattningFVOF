@@ -88,16 +88,31 @@ transaktioner.
 1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som decimaltecken.
    Du kan också använda en tabell med semikolon och kolumnerna
    `fastighet;andel;agare;antal_agare`, där bara `andel` krävs.
-2. **`data/bokslut.csv`**: en rad per år med summorna från resultaträkningen:
+2. **`data/bokslut.csv`**: en rad per år. **Det räcker med årets resultat**:
+
+   ```
+   ar;resultat
+   2025;31200
+   ```
+
+   Det ger beskattningskurvan och vem som ska deklarera. Vill ni att utskicket
+   också ska visa varje fastighets andel av intäkterna och kostnaderna fyller ni
+   i dem i stället. Skatteverket beskriver att näringsfastigheter redovisar
+   intäkter och kostnader var för sig.
 
    | Kolumn | Ta från resultaträkningen | Krävs |
    |---|---|---|
    | `ar` | Räkenskapsåret | Ja |
-   | `intakter` | Summa rörelseintäkter (fiskekort, bidrag m.m.) | Ja |
-   | `kostnader` | Summa rörelsekostnader, **inklusive avskrivningar** | Ja |
-   | `ranteintakter` | Finansiella intäkter (ränta, utdelning) | Nej |
+   | `resultat` | Årets resultat | Ja, om intäkter och kostnader saknas |
+   | `intakter` | Summa rörelseintäkter (fiskekort, bidrag m.m.) | Nej |
+   | `kostnader` | Summa rörelsekostnader, **inklusive avskrivningar** | Nej |
+   | `ranteintakter` | Finansiella intäkter (ränta, utdelning). Behövs för KU73-kontrollen | Nej |
    | `ranteutgifter` | Finansiella kostnader | Nej |
-   | `varav_uttaxering` | Uttaxering eller medlemsavgifter från delägarna, om den ingår i `intakter`. Räknas bort | Nej |
+   | `varav_uttaxering` | Uttaxering eller medlemsavgifter från delägarna, om den ingår i resultatet eller intäkterna. Räknas bort | Nej |
+
+   Med bara resultatet visar underlaget för privatbostäder i stället hur stora
+   föreningens intäkter får bli innan just den fastigheten behöver deklarera.
+   För den största andelen är gränsen nästan 300 000 kr.
 
 3. Ange året och eventuella scenarier i notebookens första kodcell och kör alla
    celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
