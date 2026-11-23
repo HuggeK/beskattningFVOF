@@ -89,9 +89,24 @@ Du behöver **bara några summor ur bokslutets resultaträkning**, inga enskilda
 transaktioner.
 
 1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som
-   decimaltecken. Vill du ha med fastighetsbeteckningar använder du två kolumner
-   med semikolon, `fastighet;andel`. Filen i repot är ett exempel. Byt ut den mot
-   er förenings andelar.
+   decimaltecken. Filen i repot är ett exempel. Byt ut den mot er förenings
+   andelar. Vill du ha med fler uppgifter använder du en tabell med semikolon och
+   rubrikrad:
+
+   ```
+   fastighet;andel;typ
+   Byn 1:3;0,1679;naring
+   Byn 2:7;0,0652;privat
+   Byn 4:1;0,0335;
+   ```
+
+   - `fastighet` är frivillig.
+   - `typ` är frivillig och kan vara `naring`, `privat` eller tom (okänd). Typen
+     ger en mer rättvisande bild. Privatbostäder räknas inte i beskattningskurvan,
+     eftersom de bara behöver deklarera om andelen av intäkterna är över cirka
+     50 000 kr. Om några av de största andelarna är privatbostäder hamnar alltså
+     fler under gränsen. Okänd typ räknas som näring, vilket är det strängaste
+     fallet, och utskicket visar då utfallet för båda typerna.
 2. **Bokslutets siffror** fyller du i direkt i notebookens första kodcell, i
    `BOKSLUT`. Ta dem från resultaträkningen:
 
@@ -112,9 +127,13 @@ transaktioner.
 3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
    underlaget i `utdata/underlag_<år>.csv`, som kan skickas ut till delägarna.
 
-**Flera ägare till samma fastighet:** gränserna gäller per fastighet, inte per
-ägare. Verktyget räknar därför bara per fastighet. Har en fastighet flera ägare
-delar de på fastighetens andel.
+**Gränsen gäller fastighetens andel av föreningens resultat.** Gränsen på 1 500 kr
+jämförs med *fastighetens andel av föreningens* intäkter minus kostnader. Ägarens
+egna kostnader räknas inte. Den gäller per fastighet, inte per ägare. Har en
+fastighet flera ägare delar de på fastighetens andel, men det ändrar inte om
+fastigheten hamnar över eller under gränsen. Det som påverkar är fastighetens
+**typ** (se ovan) och föreningens resultat. Den som ändå deklarerar andelen tar
+upp den i sin näringsverksamhet tillsammans med sina egna intäkter och kostnader.
 
 Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget.
 
