@@ -216,6 +216,119 @@ till exempel en egen avskrivningsplan, får räkna själv utifrån sin andel. F�
 privatbostäder räknas alla intäkter som upplåtelseintäkter. Det kan ge något för
 höga siffror, men i en normalstor förening hamnar de ändå långt under gränsen.
 
+## Det här visar notebooken
+
+Exemplen nedan kommer från en körning med exempelfilen i repot och exempelbokslutet
+(intäkter 95 000 kr, kostnader 58 000 kr, uttaxering 8 500 kr, ränta 400 kr).
+
+### Avsnitt 2: Inläsning
+
+En kontroll av att matrikeln och bokslutet har lästs in rätt:
+
+```text
+85 delägarfastigheter, summa andelstal 1.000000
+Fastighetstyp: okänd 85 st
+
+Föreningen 2026:  intäkter 86 900 kr  –  kostnader 58 000 kr  =  resultat 28 900 kr
+  (uttaxering 8 500 kr är borträknad ur intäkterna)
+```
+
+### Avsnitt 3: Beskattningskurvan
+
+**Scenariotabell.** Årets resultat jämförs med resultaten i `SCENARIER`:
+
+```text
+                         Resultat  Ska deklarera  Under gränsen  Tas upp totalt   Extra skatt totalt, trolig (spann)
+Årets resultat 2026        28 900              4             81       12 581 kr          6 291 kr (2 592–8 178 kr)
+Scenario 1                 10 000              1             84        1 680 kr            840 kr (346–1 092 kr)
+Scenario 2                 25 000              4             81       10 884 kr          5 442 kr (2 242–7 074 kr)
+Scenario 3                 50 000              6             79       25 122 kr         12 561 kr (5 175–16 329 kr)
+Scenario 4                100 000             16             69       70 142 kr         35 071 kr (14 449–45 592 kr)
+```
+
+**Planeringstabell med brytpunkter.** Varje resultatintervall, hur många som ska
+deklarera och vilka fastigheter som tillkommer (de första raderna):
+
+```text
+  Föreningens resultat     Ska deklarera   Tillkommer vid intervallets början
+  0 – 8 930 kr                         0
+  8 931 – 11 634 kr                    1   + Fastighet 01
+  11 635 – 20 475 kr                   2   + Fastighet 13
+  20 476 – 23 009 kr                   3   + Fastighet 79
+  23 010 – 44 711 kr                   4   + Fastighet 11
+  44 712 – 59 577 kr                   6   + Fastighet 56, Fastighet 57
+  …
+
+Årets resultat 28 900 kr ligger 5 890 kr över brytpunkten 23 010 kr. Under 23 010 kr hade 1 färre behövt deklarera.
+Nästa brytpunkt är 44 712 kr (15 812 kr bort) – då tillkommer 2 till.
+```
+
+**Diagrammet** är bilden högst upp i README:n, med två delar:
+
+| Del | Visar |
+|---|---|
+| Övre: beskattningskurvan | Röd trappa med antal som ska deklarera. Blå linje med summa som tas upp. Lila fält med extra skatt (spann) och lila linje med trolig skatt. Röda streckade linjer vid brytpunkterna. Linjer för årets resultat och scenarierna. Grönt fält där ingen behöver deklarera och orange fält för underskott. |
+| Nedre: per fastighet | De 30 största andelarna. Grått där fastigheten är under gränsen och rött där den ska deklarera. Kolumnen till höger visar vad varje fastighet deklarerar vid årets resultat. |
+
+### Avsnitt 4: Underlag per fastighet
+
+**Tabell för alla fastigheter** (utdrag):
+
+```text
+Fastighet        Typ      Andel %  Intäkter  Kostnader    Netto  Status
+Fastighet 01     okänd     16.797    14 597      9 742    4 854  Näring: SKA deklarera / Privat: Inget att deklarera
+Fastighet 02     okänd      0.176       153        102       51  Näring: Behöver inte / Privat: Inget att deklarera
+…
+Sammanställning:
+  okänd   Näring: Behöver inte / Privat: Inget att deklarera            81 st
+  okänd   Näring: SKA deklarera / Privat: Inget att deklarera            4 st
+
+KU73 behövs inte: största andel av räntan är 67 kr (gräns 1500 kr).
+```
+
+När `typ` är angiven i matrikeln visas bara status för den typen.
+
+**Stapeldiagram** med varje fastighets netto, sorterat från störst till minst.
+Rött = ska deklarera, grått = behöver inte, orange = får välja (underskott),
+blått = privatbostad.
+
+![Netto per fastighet](docs/netto_per_fastighet.png)
+
+### Avsnitt 5: Uppskattad extra skatt
+
+```text
+Fastighet           Ska ta upp  Skatt trolig   Spann
+Fastighet 01          4 854 kr      2 427 kr   1 000–3 155 kr
+Fastighet 13          3 726 kr      1 863 kr   768–2 422 kr
+Fastighet 79          2 117 kr      1 059 kr   436–1 376 kr
+Fastighet 11          1 884 kr        942 kr   388–1 225 kr
+
+Alla medlemmar tillsammans: ca 6 291 kr i extra skatt (spann 2 592–8 178 kr).
+  4 av 85 fastigheter berörs → i snitt 1 573 kr per berörd fastighet (648–2 044 kr).
+```
+
+Ett förlustår visas i stället hur mycket delägarna kan sänka sin skatt om de tar
+upp underskottet.
+
+### Filer i mappen `utdata`
+
+| Fil | Innehåll |
+|---|---|
+| `beskattningskurva.png` | Diagrammet från avsnitt 3 |
+| `underlag_<år>.csv` | En rad per fastighet. Öppnas direkt i Excel (semikolon och decimalkomma). |
+
+Kolumner i `underlag_<år>.csv`:
+
+| Kolumn | Betyder |
+|---|---|
+| `fastighet`, `typ`, `andel` | Från matrikeln |
+| `intakter`, `kostnader`, `netto` | Fastighetens andel av föreningens intäkter och kostnader, och skillnaden. Det är beloppen som förs in i NE-bilagan. |
+| `status` | Utfallet för den angivna typen (eller för båda om typen är okänd) |
+| `om_naringsfastighet` | `SKA deklarera`, `Behöver inte` eller `FÅR välja (underskott)` |
+| `om_privatbostad`, `privat_ruta_7_3`, `privat_ruta_7_2`, `privat_ruta_8_1` | Utfallet om fastigheten är en privatbostad, och beloppen per ruta |
+| `ku73_om_privat` | Belopp för KU73 om fastigheten är en privatbostad (oftast 0) |
+| `naring_deklarera_fran_resultat` | Från vilket totalt resultat för föreningen fastigheten måste deklarera |
+
 ## Uppskattad extra skatt
 
 Notebooken summerar hur mycket varje fastighet ska ta upp och uppskattar vad det
