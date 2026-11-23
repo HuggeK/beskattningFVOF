@@ -1,0 +1,5 @@
+post;typ;anskaffningsar;anskaffningsvarde;moms_sats;inkl_moms;avskrivningstid_ar
+EXEMPEL Fiskevårdsplan (konsult);tjanst;2027;87500;25;ja;10
+EXEMPEL Provfiske;tjanst;2027;30000;25;ja;5
+EXEMPEL Båt med motor;inventarie;2025;60000;25;ja;5
+EXEMPEL Nät och redskap;inventarie;2027;12000;25;ja;0
