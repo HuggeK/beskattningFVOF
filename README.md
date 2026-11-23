@@ -41,6 +41,13 @@ fiskekort.
     länge resultatet är under 8 931 kr. Gränsen styrs av den största andelen.
   - I det **orange fältet** har föreningen underskott, och alla med näringsfastighet
     *får* ta upp sin andel.
+- **Röda streckade linjer** markerar **brytpunkterna**, alltså de resultat där
+  ytterligare fastigheter måste börja deklarera. Etiketten visar resultatet och
+  hur antalet ändras, till exempel `44 712 kr 4→6`. Om föreningen kan styra årets
+  resultat, genom att tidigarelägga en utgift eller sätta fiskekortspriset, slipper
+  fler deklarera om resultatet hamnar strax *under* en brytpunkt. Notebooken
+  skriver också ut en tabell med alla intervall och visar hur långt årets resultat
+  ligger från närmaste brytpunkt.
 - **Nedre diagrammet:** för varje fastighet visas från vilket resultat just den
   måste deklarera (rött) och var den ligger under gränsen (grått).
 - **Scenarier:** i notebooken jämför du egna resultat med listan `SCENARIER`.
@@ -89,9 +96,24 @@ Du behöver **bara några summor ur bokslutets resultaträkning**, inga enskilda
 transaktioner.
 
 1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som
-   decimaltecken. Vill du ha med fastighetsbeteckningar använder du två kolumner
-   med semikolon, `fastighet;andel`. Filen i repot är ett exempel. Byt ut den mot
-   er förenings andelar.
+   decimaltecken. Filen i repot är ett exempel. Byt ut den mot er förenings
+   andelar. Vill du ha med fler uppgifter använder du en tabell med semikolon och
+   rubrikrad:
+
+   ```
+   fastighet;andel;typ
+   Byn 1:3;0,1679;naring
+   Byn 2:7;0,0652;privat
+   Byn 4:1;0,0335;
+   ```
+
+   - `fastighet` är frivillig.
+   - `typ` är frivillig och kan vara `naring`, `privat` eller tom (okänd). Typen
+     ger en mer rättvisande bild. Privatbostäder räknas inte i beskattningskurvan,
+     eftersom de bara behöver deklarera om andelen av intäkterna är över cirka
+     50 000 kr. Om några av de största andelarna är privatbostäder hamnar alltså
+     fler under gränsen. Okänd typ räknas som näring, vilket är det strängaste
+     fallet, och utskicket visar då utfallet för båda typerna.
 2. **Bokslutets siffror** fyller du i direkt i notebookens första kodcell, i
    `BOKSLUT`. Ta dem från resultaträkningen:
 
@@ -109,12 +131,29 @@ transaktioner.
    **Intäkter och kostnader krävs.** Delägare med näringsfastighet ska ta upp sin
    andel av intäkterna och sin andel av kostnaderna var för sig, så utskicket
    visar båda. Resultatet räknas fram ur dem.
-3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
-   underlaget i `utdata/underlag_<år>.csv`, som kan skickas ut till delägarna.
+3. **Frivilligt: `data/agare.csv`** med ägarna inom varje fastighet. Det ger en
+   sammanställning per person. Fastighetsnamnen måste vara desamma som i
+   `andelar.csv`, och fastigheter utan namn heter *Fastighet 01*, *Fastighet 02*
+   och så vidare. Utelämnas `agarandel` delas fastigheten lika. En person kan
+   äga flera fastigheter.
 
-**Flera ägare till samma fastighet:** gränserna gäller per fastighet, inte per
-ägare. Verktyget räknar därför bara per fastighet. Har en fastighet flera ägare
-delar de på fastighetens andel.
+   ```
+   fastighet;agare;agarandel
+   Byn 1:3;Anna Andersson;1/2
+   Byn 1:3;Bo Berg;1/2
+   Byn 2:7;Skog AB;
+   ```
+4. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png`,
+   underlaget per fastighet i `utdata/underlag_<år>.csv` och sammanställningen
+   per ägare i `utdata/per_person_<år>.csv`.
+
+**Gränsen gäller fastighetens andel av föreningens resultat.** Gränsen på 1 500 kr
+jämförs med *fastighetens andel av föreningens* intäkter minus kostnader. Ägarens
+egna kostnader räknas inte. Den gäller per fastighet, inte per ägare. Har en
+fastighet flera ägare delar de på fastighetens andel, men det ändrar inte om
+fastigheten hamnar över eller under gränsen. Det som påverkar är fastighetens
+**typ** (se ovan) och föreningens resultat. Den som ändå deklarerar andelen tar
+upp den i sin näringsverksamhet tillsammans med sina egna intäkter och kostnader.
 
 Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget.
 
@@ -127,6 +166,24 @@ används. För näringsfastigheter blir det rätt. Den som vill göra något ann
 till exempel en egen avskrivningsplan, får räkna själv utifrån sin andel. För
 privatbostäder räknas alla intäkter som upplåtelseintäkter. Det kan ge något för
 höga siffror, men i en normalstor förening hamnar de ändå långt under gränsen.
+
+## Uppskattad extra skatt
+
+Notebooken summerar hur mycket varje ägare ska ta upp och uppskattar vad det kostar
+i skatt, både per ägare och för alla medlemmar tillsammans. Eftersom skatten beror
+på varje ägares egen situation visas den som ett **spann**. Satserna ändras i
+`SKATTESATS`.
+
+| Nivå | Sats | Ungefär vem |
+|---|---|---|
+| Låg | 20,6 % | Aktiebolag (bolagsskatt). Den som har underskott i sin NE betalar 0 kr just det året |
+| Trolig | 50 % | Privatperson med näringsverksamhet: kommunalskatt ca 32 % + särskild löneskatt 24,26 % (passiv) eller egenavgifter 28,97 % (aktiv), efter schablonavdrag |
+| Hög | 65 % | Som trolig, men med statlig inkomstskatt 20 % över skiktgränsen |
+| Privatbostad | 30 % | Inkomst av kapital |
+
+Ett förlustår visas i stället hur mycket delägarna *kan* sänka sin skatt om de
+väljer att ta upp underskottet. Beskattningskurvans scenariotabell visar också den
+totala extra skatten för varje scenario.
 
 ## Bra att veta
 
