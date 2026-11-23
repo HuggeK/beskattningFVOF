@@ -1,299 +1,151 @@
 # beskattningFVOF
 
-Underlag för delägarbeskattning i **Törn och Törngöls Fiskevårdsområdesförening (FVOF)**.
-Notebooken `beskattning.ipynb` fördelar föreningens intäkter och kostnader på
-delägarfastigheterna. För varje fastighet visar den vad som ska, får eller inte
-behöver tas upp i deklarationen.
+Underlag för delägarnas deklarationer i **Törn och Törngöls Fiskevårdsområdesförening (FVOF)**.
 
 > [!WARNING]
-> **Viktigt: detta är inte skatterådgivning.**
->
-> Texten i den här README:n och i notebooken är en **sammanfattning skriven av en
-> språkmodell (AI)**. Den ska bara ses som **upplysning om hur reglerna ser ut i
-> skrivande stund (november 2026)**. Regler, beloppsgränser och Skatteverkets
-> tolkningar ändras.
->
-> **Se alltid [Skatteverket](https://www.skatteverket.se) för aktuella skatteregler.**
-> Allt här är enbart råd. Varje delägare ansvarar själv för sin deklaration. Fråga
-> Skatteverket, föreningens revisor eller en redovisningskonsult vid minsta tvekan.
-> Belopp och regler nedan gäller inkomstår 2024 och framåt om inget annat anges.
+> **Detta är inte skatterådgivning.** Texten är en **sammanfattning skriven av en
+> språkmodell (AI)** och ska bara ses som upplysning om hur reglerna ser ut i
+> november 2026. Regler och beloppsgränser ändras. **Se alltid
+> [Skatteverket](https://www.skatteverket.se) för aktuella skatteregler.** Varje
+> delägare ansvarar själv för sin deklaration.
 
----
+## Kort om hur det fungerar
 
-## Snabbstart
+Föreningen betalar ingen inkomstskatt själv. I stället äger varje delägarfastighet
+en **andel** av föreningen, och fastighetens ägare ska ta upp den andelen av
+föreningens intäkter och kostnader i sin egen deklaration. Oftast blir det så små
+belopp att ingen behöver deklarera något alls. Den som äger skog eller jordbruk
+(en *näringsfastighet*) ska deklarera om fastighetens andel av överskottet är minst
+1 500 kr. Ett år med förlust *får* den ägaren välja att ta upp förlusten och minska
+sin skatt. Den som bara har ett bostadshus (en *privatbostad*) behöver i praktiken
+nästan aldrig göra något. Föreningens uppgift är bara att tala om för varje
+fastighet hur stor dess andel av intäkterna och kostnaderna är. Det är vad det här
+verktyget räknar ut.
 
-1. Fyll i `data/andelar.csv`. Det räcker med en lista med ett andelstal per rad.
-2. Fyll i en resultatfil för året, se `data/resultat_exempel.csv`. Använd **bokslutets
-   periodiserade belopp**, inte kontoutdragen.
-3. Fyll i `data/investeringar.csv` med föreningens investeringar, alla år.
-4. Ställ in år, filnamn och om föreningen är momsregistrerad i notebookens första kodcell.
-5. Kör alla celler. Resultatet visas i notebooken och sparas i `utdata/underlag_<år>.csv`.
+## Beskattningskurvan
 
-Kräver Python 3 och `matplotlib`, för diagrammet.
+Verktygets kärna är **beskattningskurvan**. Den visar vid vilket resultat för
+föreningen delägare med näringsfastighet måste börja deklarera, och hur mycket som
+då tas upp totalt. Kurvan bygger bara på andelarna, så den kan användas för att
+planera: inför en stor utgift, vid budgetering eller när man sätter priset på
+fiskekort.
 
----
+![Beskattningskurvan](docs/beskattningskurva.png)
 
-## Sammanfattning av reglerna
+- **Övre diagrammet:** den röda trappan visar hur många som *ska* deklarera vid ett
+  visst resultat. Den blå linjen visar hur mycket som tas upp totalt.
+  - I det **gröna fältet** behöver ingen deklarera. Med våra andelar gäller det så
+    länge resultatet är under 8 931 kr.
+  - I det **orange fältet** har föreningen underskott, och alla med näringsfastighet
+    *får* ta upp sin andel.
+- **Nedre diagrammet:** för varje fastighet visas från vilket resultat just den
+  måste deklarera (rött) och var den ligger under gränsen (grått).
+- **Scenarier:** i notebooken jämför du egna resultat med listan `SCENARIER`.
+  Där finns också ett **reglage** för att prova olika resultat (kräver `ipywidgets`).
+- **I utskicket** får varje fastighet kolumnen `naring_deklarera_fran_resultat`.
+  Den visar från vilket resultat för föreningen ägaren måste deklarera.
 
-### 1. Föreningen är delägarbeskattad
+### Årets gång
 
-Fiskevårdsområden är i regel **delägarbeskattade**. Föreningen betalar ingen
-inkomstskatt. Varje delägare deklarerar i stället sin fastighets andel av
-föreningens intäkter och kostnader.
+```mermaid
+flowchart LR
+    A["Räkenskapsåret<br/>jan–dec"] --> B["Bokslut"]
+    B --> C["Årsmöte i mars<br/>fastställer resultatet"]
+    C --> D["Notebooken räknar<br/>andel per fastighet"]
+    D --> E["Utskick till<br/>delägarna"]
+    E --> F["Delägarna deklarerar<br/>i maj"]
+```
 
-Utdelning från föreningen och driftsbidrag till föreningen räknas inte med:
+Årsmötet i mars flyttar inte inkomsten till ett annat år. Verksamhetsåret 2026
+deklareras i maj 2027, och en utgift i januari 2027 hör till 2027.
 
-- **Driftsbidrag/uttaxering** från delägarna är inte avdragsgilla för delägaren och
-  är ingen intäkt i beräkningen.
-- **Utdelning** till delägarna är skattefri för delägaren och ingen kostnad i beräkningen.
+### Behöver jag som delägare deklarera?
 
-### 2. Vilket år?
+```mermaid
+flowchart TD
+    S["Min fastighets andel<br/>(från föreningens utskick)"] --> T{"Vilken typ av fastighet?<br/>Se typkoden på<br/>fastighetstaxeringen"}
+    T -->|"Lantbruk/skog (typkod 1xx)<br/>eller ägd av bolag"| N{"Andelens netto<br/>= intäkter − kostnader"}
+    T -->|"Småhus där jag eller en<br/>närstående bor (typkod 2xx)"| P{"Andel av intäkterna<br/>över 50 000 kr?"}
+    N -->|"1 500 kr eller mer"| N1["SKA deklarera<br/>i NE-bilagan eller INK2"]
+    N -->|"0–1 499 kr"| N2["Behöver inte"]
+    N -->|"Negativt"| N3["FÅR deklarera<br/>underskottet i NE"]
+    P -->|"Nej (nästan alltid)"| P1["Inget att deklarera"]
+    P -->|"Ja"| P2["Deklarera i ruta 7.3<br/>efter schablonavdrag"]
+```
 
-- Delägare som är **fysiska personer och dödsbon** har kalenderår som beskattningsår.
-- Med kalenderår som räkenskapsår gäller: verksamhetsåret 2026 fastställs på
-  årsmötet i mars 2027 och deklareras i maj 2027 (inkomstår 2026). **Årsmötets
-  datum flyttar inte inkomsten till ett annat år.**
-- En utgift som uppkommer i januari 2027 hör till 2027 års resultat. Undantag är om
-  den gäller 2026 och bokas som skuld i bokslutet för 2026 (bokföringsmässiga grunder).
-- **Aktiebolag och ekonomiska föreningar** som äger delägarfastigheter kan ha
-  **brutet räkenskapsår**. Skatteverket anger ingen uttrycklig regel för vilket av
-  föreningens år de ska ta upp. Det avgör bolagets revisor eller redovisningskonsult.
-  Föreningen lämnar siffror för sitt eget räkenskapsår.
-
-### Näring eller privat: därför spelar fastighetstypen roll
-
-| | Näring | Privat |
+| | Näringsfastighet | Privatbostad |
 |---|---|---|
 | Föreningens kostnader | Ger avdrag | Ger inget avdrag |
-| Gräns för att deklarera | Netto ≥ 1 500 kr | Andelen av upplåtelseintäkten överstiger 50 000 kr (schablon 40 000 kr + 20 % av intäkten) |
-| Förlustår (till exempel 2027) | Kan minska skatten på gårdens överskott | Ingen effekt |
-| Blankett | NE-bilagan eller INK2 | Ruta 7.2 och 7.3 (ränteutgifter i 8.1) |
+| Gräns för att deklarera | Netto ≥ 1 500 kr | Andel av intäkterna > 50 000 kr (schablon 40 000 kr + 20 %) |
+| Förlustår | Kan minska skatten på gårdens överskott | Ingen effekt |
+| Blankett | NE-bilagan eller INK2 | Ruta 7.3 (ränta i 7.2) |
 
-### 3. Näringsfastighet (lantbruk, skog, fastigheter ägda av bolag)
+## Så använder du verktyget
 
-- Andelen av intäkter och **faktiska kostnader** redovisas i näringsverksamhet:
-  NE-bilagan för fysiska personer, INK2 för aktiebolag.
-- Andelen **behöver inte tas upp om intäkterna överstiger kostnaderna med mindre än
-  1 500 kr** (15 kap. 10 § IL, 600 kr till och med inkomstår 2023).
-  Gränsen gäller **nettot**. Är nettot exakt 1 500 kr eller mer ska andelen tas upp.
-- Undantaget gäller **intäkter och kostnader tillsammans**. Det går inte att ta upp
-  bara kostnaderna.
-- **Underskott:** lagtexten säger "behöver inte". Det tyder på att en delägare får
-  välja att ta upp en negativ andel, till exempel ett år med en stor utgift, och
-  minska sitt överskott från jord- eller skogsbruket. Skatteverket säger inget
-  uttryckligt om detta. **Kontrollera med Skatteverket innan det används.**
-- För en fysisk person räknas all näringsverksamhet som en. Andelen ingår alltså i
-  samma NE som skogsgården. Gårdens egna kostnader, till exempel maskiner, får dras
-  av oavsett föreningen. Utjämning mellan år görs med periodiseringsfond,
-  expansionsfond och räntefördelning. **Skogskonto** gäller bara intäkter från
-  skogen och inte fiskeintäkter.
-- Värdeminskningsavdrag på föreningens tillgångar görs som om de vore fastighetens egna.
+Du behöver **bara några summor ur bokslutets resultaträkning**, inga enskilda
+transaktioner.
 
-### 4. Privatbostadsfastighet (småhus ägt av en fysisk person)
+1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som decimaltecken.
+   Du kan också använda en tabell med semikolon och kolumnerna
+   `fastighet;andel;agare;antal_agare`, där bara `andel` krävs.
+2. **`data/bokslut.csv`**: en rad per år med summorna från resultaträkningen:
 
-- Andelen av upplåtelseintäkterna, till exempel fiskekort och arrende, deklareras
-  som **kapital, ruta 7.3**.
-- **Faktiska kostnader får inte dras av.** I stället gäller ett **schablonavdrag på
-  40 000 kr per år och fastighet plus 20 % av intäkten**. Avdraget får inte bli större
-  än intäkten. Schablonen gäller fastighetens **alla** upplåtelser tillsammans, så
-  annan uthyrning på samma fastighet påverkar resultatet.
-- **Ränta och utdelning** deklareras i ruta 7.2. Bara den del av andelen som
-  **överstiger 1 500 kr** per samfällighet ska tas upp.
-- **Ränteutgifter:** andelen får dras av i ruta 8.1.
-- Ingen förlust kan uppstå, och föreningens kostnader påverkar inte delägarens skatt.
+   | Kolumn | Ta från resultaträkningen | Krävs |
+   |---|---|---|
+   | `ar` | Räkenskapsåret | Ja |
+   | `intakter` | Summa rörelseintäkter (fiskekort, bidrag m.m.) | Ja |
+   | `kostnader` | Summa rörelsekostnader, **inklusive avskrivningar** | Ja |
+   | `ranteintakter` | Finansiella intäkter (ränta, utdelning) | Nej |
+   | `ranteutgifter` | Finansiella kostnader | Nej |
+   | `varav_uttaxering` | Uttaxering eller medlemsavgifter från delägarna, om den ingår i `intakter`. Räknas bort | Nej |
 
-### 5. Kontrolluppgift KU73
+3. Ange året och eventuella scenarier i notebookens första kodcell och kör alla
+   celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png` och
+   underlaget i `utdata/underlag_<år>.csv`, som kan skickas ut till delägarna.
 
-För en **delägarbeskattad** förening gäller KU73 inte utdelning från föreningen
-till medlemmarna. Den gäller **föreningens egna ränteintäkter och utdelningar på
-kapital**, till exempel ränta på bankkontot.
+Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget.
 
-- **Vilka:** privatpersoner och dödsbon som äger en **privatbostadsfastighet**.
-  Näringsfastigheter ingår inte.
-- **Belopp:** fält 732, "Skattepliktig del kapital". Det är fastighetens andel av
-  räntan och utdelningen **minus 1 500 kr**. Upplåtelse, till exempel fiskekort,
-  ska **inte** med. Ränteutgifter dras inte av.
-- **Flera ägare:** en KU73 per ägare, där beloppet delas. Exempel: 2 000 kr − 1 500 kr
-  = 500 kr ger 250 kr var för två ägare.
-- **Under gränsen:** är andelen högst 1 500 kr lämnas ingen KU73.
-- **Uppgifter som krävs:** föreningens organisationsnummer och namn, inkomstår,
-  specifikationsnummer, samt mottagarens personnummer (eller dödsbonummer),
-  namn och adress.
-- **När och hur:** senast **31 januari** året efter. Bara digitalt, via
-  e-tjänsten *Lämna kontrolluppgifter* eller som XML-fil. Rättelser görs med samma
-  specifikationsnummer.
+**Moms:** ta beloppen direkt från resultaträkningen. Där är de redan rätt. Hos en
+momsregistrerad förening, som vår, är de utan moms. Hos en förening som inte är
+momsregistrerad ingår momsen i kostnaderna, och så ska det vara.
 
-Notebooken behöver inte veta fastighetstypen för att avgöra om KU73 **kan** behövas.
-Om ingen fastighets andel av räntan är över 1 500 kr behövs ingen KU73 alls.
-Annars listas de fastigheter där det krävs **om** de är privatbostäder.
+**Vad blir förenklat?** Alla intäkter behandlas lika, och bokslutets avskrivningar
+används. För näringsfastigheter blir det rätt. Den som vill göra något annat,
+till exempel en egen avskrivningsplan, får räkna själv utifrån sin andel. För
+privatbostäder räknas alla intäkter som upplåtelseintäkter. Det kan ge något för
+höga siffror, men med föreningens storlek hamnar de ändå långt under gränsen.
 
-### 6. Moms (vår förening är momsregistrerad)
+## Bra att veta
 
-- Upplåtelse av **rätt till fiske** är undantagen från fastighetsundantaget i
-  mervärdesskattelagen (2023:200) och är därför **momspliktig**. Fiskekort säljs
-  med **25 % moms**. Livsmedel, till exempel fisk, har 12 % och böcker 6 %.
-- Momsplikt gäller när omsättningen överstiger **120 000 kr per år**. En förening
-  under gränsen kan ansöka om momsbefrielse men förlorar då avdragsrätten för
-  ingående moms.
-- **Momsen är föreningens.** Delägarna redovisar ingen moms. Den ingår inte heller i
-  deras inkomster eller kostnader.
-- Är föreningen momsregistrerad ska **alla belopp i delägarunderlaget vara exklusive
-  moms**: intäkter utan utgående moms och kostnader utan avdragsgill ingående moms.
-  Notebooken räknar om belopp som anges inklusive moms.
-- Är föreningen inte momsregistrerad är kostnaderna **inklusive moms**, eftersom
-  momsen då är en kostnad.
-- Bidrag är normalt ingen momspliktig omsättning (moms 0 %).
+- **Driftsbidrag och utdelning.** Avgifter som delägarna betalar till föreningen är
+  inte avdragsgilla för dem. Utdelning från föreningen är skattefri. Ingen av dem
+  ska därför räknas med.
+- **Avskrivningar.** Huvudregeln är att köpta tjänster och undersökningar dras av
+  direkt det år de görs, till exempel en fiskevårdsplan från en konsult eller ett
+  provfiske. Det finns ingen regel om 10 eller 5 år för sådana utgifter. Inventarier
+  som båt, motor och redskap skrivs ofta av på 5 år. De får dras av direkt om de
+  kostar mindre än ett halvt prisbasbelopp, alltså 29 800 kr år 2027 utan moms.
+  Stäm av med revisorn om ni vill fördela en tjänst över flera år.
+- **Moms.** Fiskekort är momspliktiga med 25 % moms när föreningen är
+  momsregistrerad, vilket krävs över 120 000 kr i omsättning per år. Momsen är då
+  föreningens och syns inte i delägarnas underlag.
+- **Bolag med brutet räkenskapsår.** Föreningen lämnar siffror för sitt eget år.
+  Bolagets revisor avgör vilket år bolaget tar upp dem.
+- **KU73** gäller bara **föreningens ränteintäkter**, inte fiskekort och inte
+  utdelning till medlemmarna. Den behövs bara om en privatbostads andel av räntan
+  överstiger 1 500 kr. Notebooken kontrollerar det. KU73 lämnas digitalt senast
+  31 januari, med ägarens personnummer.
+- **Fastighetstyp.** Föreningen behöver inte hålla reda på vilken typ av fastighet
+  varje delägare har. Underlaget visar utfallet för båda typerna, och delägaren
+  läser det som gäller för hen.
 
-### 7. Avskrivningar och investeringar
+## Källor
 
-**Huvudregeln är direkt avdrag.** Löpande kostnader och köpta tjänster dras av det
-år de uppkommer. Avskrivning (värdeminskningsavdrag) gäller **inventarier**, till
-exempel båt, motor, nät, fiskräknare och mätstation, samt vissa förvärvade
-rättigheter.
+- [Skatteverket: Så deklarerar du som delägare i en samfällighet](https://skatteverket.se/foreningar/deklarera/sadeklarerarduatensamfallighet/sadeklarerardusomdelagareiensamfallighet.4.1c68351d170ce5545273d9b.html)
+- [Skatteverket: Så deklarerar du åt en samfällighet](https://skatteverket.se/foreningar/deklarera/sadeklarerarduatensamfallighet.4.70ac421612e2a997f85800044871.html)
+- [Skatteverket: Kontrolluppgift KU73](https://www.skatteverket.se/foretag/skatterochavdrag/kontrolluppgifter/kontrolluppgiftomutdelningmmtilldelagareiensamfallighetku73.4.339cd9fe17d1714c07713c1.html)
+- [Skatteverket: Typkoder för fastigheter](https://skatteverket.se/foretag/skatterochavdrag/fastighet/fastighetstaxering/typkoder.4.3f4496fd14864cc5ac9126d.html)
+- [Vattenägarna: Momsplikten](https://www.vattenagarna.se/momsplikten/)
+- Inkomstskattelagen (1999:1229) 15 kap. 10 §, mervärdesskattelagen (2023:200) 10 kap.
 
-| Exempel | Vanlig hantering | Kommentar |
-|---|---|---|
-| **Fiskevårdsplan** köpt av konsult | **Direkt avdrag** (löpande kostnad/tjänst) | Det finns ingen regel om 10 år. En plan är en köpt tjänst, inte ett inventarium eller en förvärvad rättighet. Att fördela den över 10 år kräver stöd i god redovisningssed (aktivering som immateriell tillgång) och bör stämmas av med revisor eller Skatteverket först. |
-| **Provfiske** | **Direkt avdrag** | En undersökning av beståndet är en driftkostnad. Att fördela den över 5 år har normalt inget stöd. |
-| Båt, motor, redskap | Avskrivning, ofta **5 år** (20 % per år) | Inventarieregler: räkenskapsenlig avskrivning (30- eller 20-regeln) eller restvärdesavskrivning. |
-| Inventarie med livslängd ≤ 3 år | Direkt avdrag | Korttidsinventarier |
-| Inventarie under ett **halvt prisbasbelopp** | Direkt avdrag | Inventarier av mindre värde. 29 600 kr år 2026 och 29 800 kr år 2027, exklusive moms vid avdragsrätt. |
-
-Notebooken låter dig ange avskrivningstid per post (`0` betyder direkt avdrag) och
-använder rak avskrivning med helårsavskrivning från anskaffningsåret som underlag.
-Poster av typen `tjanst` med avskrivningstid över 0 flaggas, eftersom huvudregeln
-är direkt avdrag. Varje delägare med näringsfastighet får göra
-värdeminskningsavdrag som om tillgången vore hans eller hennes egen. Föreningens
-plan är därför ett förslag och inget tvång.
-
----
-
-## Indatafiler
-
-Alla filer använder semikolon `;` som avgränsare. Decimaler kan skrivas med komma
-eller punkt, och andelar kan skrivas som bråk (`5/64`).
-
-### `data/andelar.csv`
-
-Det enklaste formatet är **en lista med ett andelstal per rad**. Decimaltecknet
-kan vara komma eller punkt, citattecken runt talen går bra, och en rubrikrad
-som `andel` hoppas över:
-
-```
-0,167971461
-0.001761027
-"0,009030724"
-5/64
-```
-
-Fastigheterna får då namnen *Fastighet 01*, *Fastighet 02* och så vidare i radordning.
-
-Vill du ha med fler uppgifter använder du en tabell med **semikolon** (eller tab)
-som avgränsare. Kommatecken går inte, eftersom det kan vara decimaltecken. Bara
-`andel` krävs, alla andra kolumner är frivilliga:
-
-| Kolumn | Beskrivning |
-|---|---|
-| `andel` | Andelstal: decimaltal, bråk (`5/64`) eller mantal, se `ANDELSTYP` i notebooken |
-| `fastighet` | Fastighetsbeteckning |
-| `agare` | Ägare, fritext |
-| `antal_agare` | Antal ägare som delar fastigheten lika (standard 1). Används för belopp per ägare och KU73 |
-
-`fastighet;andel` utan rubrikrad fungerar också.
-
-Ingen kolumn för fastighetstyp behövs. Notebooken visar utfallet både för
-näringsfastighet och för privatbostad, och varje delägare läser den kolumn som
-gäller för hen.
-
-### `data/resultat_<år>.csv`
-
-| Kolumn | Beskrivning |
-|---|---|
-| `post` | Beskrivning, till exempel "Fiskekort Iceberg" |
-| `kategori` | Se tabellen nedan |
-| `belopp` | Belopp i kr. Positivt för både intäkter och kostnader. Negativt bara för rättelser |
-| `moms_sats` | 0, 6, 12 eller 25 |
-| `inkl_moms` | `ja` om beloppet är inklusive moms, annars `nej` |
-
-| Kategori | Betyder | Med i underlaget? |
-|---|---|---|
-| `upplatelse` | Fiskekort, upplåtelse eller arrende av fiskerätt | Intäkt |
-| `ranta` | Ränteintäkter och utdelning | Intäkt (egen regel för privatbostad) |
-| `bidrag` | Bidrag, till exempel fiskevårdsbidrag | Intäkt |
-| `ovrig_intakt` | Övriga intäkter | Intäkt |
-| `drift` | Direkt avdragsgilla kostnader: utsättning, provfiske, fiskevårdsplan, tillsyn, försäkring, möten | Kostnad |
-| `ranteutgift` | Ränteutgifter | Kostnad (ruta 8.1 för privatbostad) |
-| `driftsbidrag` | Uttaxering eller avgifter från delägarna | **Nej**, räknas bort |
-| `utdelning` | Utdelning till delägarna | **Nej**, räknas bort |
-
-#### Med eller utan moms?
-
-**Kort regel:** skriv beloppet precis som det står i underlaget du kopierar från.
-Ange sedan i `inkl_moms` om momsen ingår, och i `moms_sats` vilken sats som
-gäller. Notebooken räknar fram rätt belopp utifrån `MOMSREGISTRERAD`.
-
-**Momsregistrerad förening (som vår):** delägarnas underlag ska vara **exklusive moms**.
-
-| Du kopierar från … | `belopp` | `inkl_moms` | `moms_sats` |
-|---|---|---|---|
-| **Resultaträkningen i bokslutet** (rekommenderas). Där är intäkter och kostnader redan bokförda utan moms, och momsen ligger på egna momskonton | som det står | `nej` | satsen (25, 12, 6) eller 0 |
-| Kvitton, fakturor, Swish- eller kassasummor (bruttobelopp) | som det står | `ja` | satsen, så räknar notebooken bort momsen |
-| Poster utan moms, till exempel försäkring, bankavgifter, ränta och bidrag | som det står | `nej` | `0` |
-
-**Inte momsregistrerad förening:** fiskekorten säljs utan moms, och momsen på
-inköp är en **kostnad** för föreningen. Kostnaderna ska därför vara **inklusive
-moms**, alltså det ni faktiskt betalade.
-
-| Du kopierar från … | `belopp` | `inkl_moms` | `moms_sats` |
-|---|---|---|---|
-| Intäkter (fiskekort m.m.) | det ni fick in | `ja` eller `nej` (spelar ingen roll) | `0` |
-| Kostnader, det ni betalade | som det står | `ja` | satsen |
-| Kostnader angivna exklusive moms | som det står | `nej` | satsen, så lägger notebooken till momsen |
-
-**Investeringar** (`data/investeringar.csv`) fylls i på samma sätt. För en
-momsregistrerad förening ska anskaffningsvärdet vara exklusive moms. Det påverkar
-också gränsen för inventarier av mindre värde.
-
-**Kontroll:** summan av intäktsposterna i notebooken (utan `driftsbidrag`) ska
-stämma med resultaträkningens intäkter. Kostnaderna ska stämma på samma sätt, med
-undantag för poster som flyttats till `investeringar.csv`. Notebooken skriver
-också ut föreningens utgående och ingående moms. Den kan jämföras med
-momsdeklarationerna för året.
-
-### `data/investeringar.csv`
-
-| Kolumn | Beskrivning |
-|---|---|
-| `post` | Beskrivning |
-| `typ` | `inventarie` eller `tjanst` |
-| `anskaffningsar` | År |
-| `anskaffningsvarde` | Belopp i kr |
-| `moms_sats`, `inkl_moms` | Som ovan |
-| `avskrivningstid_ar` | Antal år. `0` betyder direkt avdrag anskaffningsåret |
-
-### Utdata per fastighet
-
-Andel av upplåtelse, ränta, övriga intäkter, driftkostnader, ränteutgifter och
-avskrivning, samt netto. Utfallet visas för **båda** fastighetstyperna:
-
-- **Om näringsfastighet:** `SKA deklarera` (netto ≥ 1 500 kr), `FÅR välja (underskott)`
-  (netto < 0) eller `Behöver inte` (0–1 499 kr).
-- **Om privatbostad:** belopp att ta upp i ruta 7.3 efter schablonavdrag, ränta över
-  1 500 kr för ruta 7.2, avdrag i ruta 8.1, och KU73-belopp per ägare.
-
----
-
-## Källor (Skatteverket m.fl.)
-
-- [Så deklarerar du som delägare i en samfällighet](https://skatteverket.se/foreningar/deklarera/sadeklarerarduatensamfallighet/sadeklarerardusomdelagareiensamfallighet.4.1c68351d170ce5545273d9b.html)
-- [Så deklarerar du åt en samfällighet](https://skatteverket.se/foreningar/deklarera/sadeklarerarduatensamfallighet.4.70ac421612e2a997f85800044871.html)
-- [Kontrolluppgift KU73](https://www.skatteverket.se/foretag/skatterochavdrag/kontrolluppgifter/kontrolluppgiftomutdelningmmtilldelagareiensamfallighetku73.4.339cd9fe17d1714c07713c1.html)
-- [Momssatser och undantag från moms](https://www.skatteverket.se/foretag/moms/saljavarorochtjanster/momssatserochundantagfranmoms.4.58d555751259e4d66168000409.html)
-- [Mervärdesskattelag (2023:200)](https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/mervardesskattelag-2023200_sfs-2023-200/), 10 kap. undantag inom fastighetsområdet
-- [Vattenägarna – Momsplikten](https://www.vattenagarna.se/momsplikten/)
-- [Prisbasbeloppet för år 2027 (SCB)](https://www.scb.se/hitta-statistik/statistik-efter-amne/priser-och-ekonomiska-tendenser/priser/konsumentprisindex-kpi/pong/statistiknyhet/prisbasbeloppet-for-ar-2027/)
-- Inkomstskattelagen (1999:1229): 6 kap. 6 §, 15 kap. 10 §, 42 kap. 29–30 §§
-
-## Licens
-
-GPL-3.0, se `LICENSE`.
+Licens: GPL-3.0, se `LICENSE`.
