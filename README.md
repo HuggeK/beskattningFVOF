@@ -101,10 +101,11 @@ transaktioner.
    rubrikrad:
 
    ```
-   fastighet;andel;typ
-   Byn 1:3;0,1679;naring
-   Byn 2:7;0,0652;privat
-   Byn 4:1;0,0335;
+   fastighet;andel;typ;agare
+   Byn 1:3;0,1679;naring;Anna Andersson (1/2), Bo Berg (1/2)
+   Byn 2:7;0,0652;privat;Cecilia Ek
+   Byn 4:1;0,0335;;Anna Andersson
+   Byn 5:2;0,0121;;Skog AB
    ```
 
    - `fastighet` är frivillig.
@@ -114,6 +115,11 @@ transaktioner.
      50 000 kr. Om några av de största andelarna är privatbostäder hamnar alltså
      fler under gränsen. Okänd typ räknas som näring, vilket är det strängaste
      fallet, och utskicket visar då utfallet för båda typerna.
+   - `agare` är frivillig och ger en sammanställning per person. Flera ägare
+     skrivs med komma emellan, med ägarandel inom parentes, till exempel `(1/2)`,
+     `(0,5)` eller `(50 %)`. Utan ägarandel delas fastigheten lika. Äger en person
+     flera fastigheter skriver du samma namn på varje rad, så summeras allt
+     per person. Gränsen på 1 500 kr prövas ändå per fastighet.
 2. **Bokslutets siffror** fyller du i direkt i notebookens första kodcell, i
    `BOKSLUT`. Ta dem från resultaträkningen:
 
@@ -131,19 +137,7 @@ transaktioner.
    **Intäkter och kostnader krävs.** Delägare med näringsfastighet ska ta upp sin
    andel av intäkterna och sin andel av kostnaderna var för sig, så utskicket
    visar båda. Resultatet räknas fram ur dem.
-3. **Frivilligt: `data/agare.csv`** med ägarna inom varje fastighet. Det ger en
-   sammanställning per person. Fastighetsnamnen måste vara desamma som i
-   `andelar.csv`, och fastigheter utan namn heter *Fastighet 01*, *Fastighet 02*
-   och så vidare. Utelämnas `agarandel` delas fastigheten lika. En person kan
-   äga flera fastigheter.
-
-   ```
-   fastighet;agare;agarandel
-   Byn 1:3;Anna Andersson;1/2
-   Byn 1:3;Bo Berg;1/2
-   Byn 2:7;Skog AB;
-   ```
-4. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png`,
+3. Kör alla celler. Beskattningskurvan sparas i `utdata/beskattningskurva.png`,
    underlaget per fastighet i `utdata/underlag_<år>.csv` och sammanställningen
    per ägare i `utdata/per_person_<år>.csv`.
 
