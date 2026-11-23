@@ -25,6 +25,40 @@ nästan aldrig göra något. Föreningens uppgift är bara att tala om för varj
 fastighet hur stor dess andel av intäkterna och kostnaderna är. Det är vad det här
 verktyget räknar ut.
 
+### Exempel: från indata till utskick
+
+**Indata 1: `data/andelar.csv`.** Bara `andel` krävs.
+
+```
+fastighet;andel;typ;agare
+Byn 1:3;0,167971461;naring;Anna Andersson (1/2), Bo Berg (1/2)
+Byn 2:7;0,128922348;privat;Cecilia Ek
+Byn 4:1;0,065191174;naring;Skog AB
+Byn 5:2;0,033548309;;Anna Andersson
+```
+
+**Indata 2: bokslutets siffror**, ifyllda i notebooken:
+
+```python
+BOKSLUT = {"intakter": 95000, "kostnader": 58000, "ranteintakter": 400,
+           "ranteutgifter": 0, "varav_uttaxering": 8500}
+# → föreningens totala resultat: 86 900 − 58 000 = 28 900 kr
+```
+
+**Resultat per fastighet** (andel × föreningens totala resultat), utdrag ur
+`utdata/underlag_2026.csv`:
+
+| Fastighet | Andel | Intäkter | Kostnader | Netto | Status | Måste deklarera från föreningsresultat |
+|---|---|---|---|---|---|---|
+| Byn 1:3 | 16,80 % | 14 597 kr | 9 742 kr | **4 854 kr** | SKA deklarera (2 427 kr var för Anna och Bo) | 8 931 kr |
+| Byn 2:7 | 12,89 % | 11 203 kr | 7 477 kr | 3 726 kr | Privatbostad, inget att deklarera | – |
+| Byn 4:1 | 6,52 % | 5 665 kr | 3 781 kr | **1 884 kr** | SKA deklarera | 23 010 kr |
+| Byn 5:2 | 3,35 % | 2 915 kr | 1 946 kr | 970 kr | Behöver inte (under 1 500 kr) | 44 712 kr |
+
+**Per person** (`utdata/per_person_2026.csv`): Anna Andersson tar upp 2 427 kr,
+eftersom Byn 5:2 är under gränsen. Bo Berg tar upp 2 427 kr och Skog AB 1 884 kr.
+För varje person visas också en uppskattad skatt som ett spann.
+
 ## Beskattningskurvan
 
 Verktygets kärna är **beskattningskurvan**. Den visar vid vilket resultat för
@@ -33,7 +67,7 @@ då tas upp totalt. Kurvan bygger bara på andelarna, så den kan användas för
 planera: inför en stor utgift, vid budgetering eller när man sätter priset på
 fiskekort.
 
-![Beskattningskurvan](docs/beskattningskurva.png)
+![Beskattningskurvan med exempeldata (resultat 28 900 kr)](docs/beskattningskurva.png)
 
 - **Övre diagrammet:** den röda trappan visar hur många som *ska* deklarera vid ett
   visst resultat. Den blå linjen visar hur mycket som tas upp totalt.
@@ -48,8 +82,11 @@ fiskekort.
   fler deklarera om resultatet hamnar strax *under* en brytpunkt. Notebooken
   skriver också ut en tabell med alla intervall och visar hur långt årets resultat
   ligger från närmaste brytpunkt.
-- **Nedre diagrammet:** för varje fastighet visas från vilket resultat just den
-  måste deklarera (rött) och var den ligger under gränsen (grått).
+- **Nedre diagrammet:** den vågräta axeln är **föreningens totala resultat**.
+  För varje fastighet visar grått de resultat där fastigheten är under gränsen,
+  och rött de resultat där den måste deklarera. Kolumnen till höger visar **hur
+  mycket varje fastighet skulle deklarera vid årets resultat** (andel × resultat)
+  och om den måste.
 - **Scenarier:** i notebooken jämför du egna resultat med listan `SCENARIER`.
   Där finns också ett **reglage** för att prova olika resultat (kräver `ipywidgets`).
 - **I utskicket** får varje fastighet kolumnen `naring_deklarera_fran_resultat`.
@@ -73,15 +110,22 @@ deklareras i maj 2027, och en utgift i januari 2027 hör till 2027.
 
 ```mermaid
 flowchart TD
-    S["Min fastighets andel<br/>(från föreningens utskick)"] --> T{"Vilken typ av fastighet?<br/>Se typkoden på<br/>fastighetstaxeringen"}
+    S["Fastighetens andel<br/>(från föreningens utskick)<br/>Gränsen prövas för HELA fastigheten,<br/>inte för varje ägare"] --> T{"Vilken typ av fastighet?<br/>Se typkoden på<br/>fastighetstaxeringen"}
     T -->|"Lantbruk/skog (typkod 1xx)<br/>eller ägd av bolag"| N{"Andelens netto<br/>= intäkter − kostnader"}
     T -->|"Småhus där jag eller en<br/>närstående bor (typkod 2xx)"| P{"Andel av intäkterna<br/>över 50 000 kr?"}
     N -->|"1 500 kr eller mer"| N1["SKA deklarera<br/>i NE-bilagan eller INK2"]
+    N1 --> M["Flera ägare? Var och en tar upp<br/>sin del av fastighetens andel –<br/>även om den egna delen är under 1 500 kr"]
     N -->|"0–1 499 kr"| N2["Behöver inte"]
     N -->|"Negativt"| N3["FÅR deklarera<br/>underskottet i NE"]
     P -->|"Nej (nästan alltid)"| P1["Inget att deklarera"]
     P -->|"Ja"| P2["Deklarera i ruta 7.3<br/>efter schablonavdrag"]
 ```
+
+**Gränsen gäller fastigheten, inte varje ägare.** Enligt 15 kap. 10 § IL behöver
+*fastighetens andel* inte tas upp om den understiger 1 500 kr. Prövningen görs alltså
+för hela fastighetens andel. Äger två personer en fastighet med netto 2 400 kr ska
+båda ta upp 1 200 kr var, trots att var och ens del är under 1 500 kr. Är
+fastighetens netto 1 400 kr behöver ingen av dem ta upp något.
 
 | | Näringsfastighet | Privatbostad |
 |---|---|---|
