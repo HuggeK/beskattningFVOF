@@ -60,6 +60,15 @@ Utdelning från föreningen och driftsbidrag till föreningen räknas inte med:
   föreningens år de ska ta upp. Det avgör bolagets revisor eller redovisningskonsult.
   Föreningen lämnar siffror för sitt eget räkenskapsår.
 
+### Näring eller privat: därför spelar fastighetstypen roll
+
+| | Näring | Privat |
+|---|---|---|
+| Föreningens kostnader | Ger avdrag | Ger inget avdrag |
+| Gräns för att deklarera | Netto ≥ 1 500 kr | Andelen av upplåtelseintäkten överstiger 50 000 kr (schablon 40 000 kr + 20 % av intäkten) |
+| Förlustår (till exempel 2027) | Kan minska skatten på gårdens överskott | Ingen effekt |
+| Blankett | NE-bilagan eller INK2 | Ruta 7.2 och 7.3 (ränteutgifter i 8.1) |
+
 ### 3. Näringsfastighet (lantbruk, skog, fastigheter ägda av bolag)
 
 - Andelen av intäkter och **faktiska kostnader** redovisas i näringsverksamhet:
