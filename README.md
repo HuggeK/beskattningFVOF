@@ -22,7 +22,7 @@ behöver tas upp i deklarationen.
 
 ## Snabbstart
 
-1. Fyll i `data/andelar.csv`: en rad per delägarfastighet, med andel och fastighetstyp.
+1. Fyll i `data/andelar.csv`. Det räcker med en lista med ett andelstal per rad.
 2. Fyll i en resultatfil för året, se `data/resultat_exempel.csv`. Använd **bokslutets
    periodiserade belopp**, inte kontoutdragen.
 3. Fyll i `data/investeringar.csv` med föreningens investeringar, alla år.
@@ -104,11 +104,28 @@ Utdelning från föreningen och driftsbidrag till föreningen räknas inte med:
 
 ### 5. Kontrolluppgift KU73
 
-Gäller bara **ränta och utdelning** för privatpersoner och dödsbon som äger en
-**privatbostadsfastighet**. Föreningen redovisar den del av andelen som överstiger
-1 500 kr per fastighet. Har fastigheten flera ägare delas beloppet. Upplåtelse,
-till exempel fiskekort, ska **inte** med. Uppgiften lämnas senast 31 januari året
-efter. Notebooken flaggar fastigheter som kan behöva KU73.
+För en **delägarbeskattad** förening gäller KU73 inte utdelning från föreningen
+till medlemmarna. Den gäller **föreningens egna ränteintäkter och utdelningar på
+kapital**, till exempel ränta på bankkontot.
+
+- **Vilka:** privatpersoner och dödsbon som äger en **privatbostadsfastighet**.
+  Näringsfastigheter ingår inte.
+- **Belopp:** fält 732, "Skattepliktig del kapital". Det är fastighetens andel av
+  räntan och utdelningen **minus 1 500 kr**. Upplåtelse, till exempel fiskekort,
+  ska **inte** med. Ränteutgifter dras inte av.
+- **Flera ägare:** en KU73 per ägare, där beloppet delas. Exempel: 2 000 kr − 1 500 kr
+  = 500 kr ger 250 kr var för två ägare.
+- **Under gränsen:** är andelen högst 1 500 kr lämnas ingen KU73.
+- **Uppgifter som krävs:** föreningens organisationsnummer och namn, inkomstår,
+  specifikationsnummer, samt mottagarens personnummer (eller dödsbonummer),
+  namn och adress.
+- **När och hur:** senast **31 januari** året efter. Bara digitalt, via
+  e-tjänsten *Lämna kontrolluppgifter* eller som XML-fil. Rättelser görs med samma
+  specifikationsnummer.
+
+Notebooken behöver inte veta fastighetstypen för att avgöra om KU73 **kan** behövas.
+Om ingen fastighets andel av räntan är över 1 500 kr behövs ingen KU73 alls.
+Annars listas de fastigheter där det krävs **om** de är privatbostäder.
 
 ### 6. Moms (vår förening är momsregistrerad)
 
@@ -158,13 +175,35 @@ eller punkt, och andelar kan skrivas som bråk (`5/64`).
 
 ### `data/andelar.csv`
 
+Det enklaste formatet är **en lista med ett andelstal per rad**. Decimaltecknet
+kan vara komma eller punkt, citattecken runt talen går bra, och en rubrikrad
+som `andel` hoppas över:
+
+```
+0,167971461
+0.001761027
+"0,009030724"
+5/64
+```
+
+Fastigheterna får då namnen *Fastighet 01*, *Fastighet 02* och så vidare i radordning.
+
+Vill du ha med fler uppgifter använder du en tabell med **semikolon** (eller tab)
+som avgränsare. Kommatecken går inte, eftersom det kan vara decimaltecken. Bara
+`andel` krävs, alla andra kolumner är frivilliga:
+
 | Kolumn | Beskrivning |
 |---|---|
+| `andel` | Andelstal: decimaltal, bråk (`5/64`) eller mantal, se `ANDELSTYP` i notebooken |
 | `fastighet` | Fastighetsbeteckning |
-| `andel` | Andelstal: bråk (`5/64`), decimaltal (`0,078125`) eller mantal, se `ANDELSTYP` i notebooken |
-| `typ` | `naring`, `privat` eller `okand`. Hämtas från fastighetstaxeringen: lantbruksenhet eller bolagsägd fastighet ger `naring`, småhus ägt av en fysisk person ger `privat` |
-| `agare` | Ägare. Fritext, frivilligt |
-| `antal_agare` | Antal ägare som delar fastigheten lika. Frivilligt, standard 1. Används för att visa belopp per ägare |
+| `agare` | Ägare, fritext |
+| `antal_agare` | Antal ägare som delar fastigheten lika (standard 1). Används för belopp per ägare och KU73 |
+
+`fastighet;andel` utan rubrikrad fungerar också.
+
+Ingen kolumn för fastighetstyp behövs. Notebooken visar utfallet både för
+näringsfastighet och för privatbostad, och varje delägare läser den kolumn som
+gäller för hen.
 
 ### `data/resultat_<år>.csv`
 
@@ -201,12 +240,12 @@ eller punkt, och andelar kan skrivas som bråk (`5/64`).
 ### Utdata per fastighet
 
 Andel av upplåtelse, ränta, övriga intäkter, driftkostnader, ränteutgifter och
-avskrivning, samt netto och status:
+avskrivning, samt netto. Utfallet visas för **båda** fastighetstyperna:
 
-- **Näring:** `SKA deklarera` (netto ≥ 1 500 kr), `FÅR välja – underskott`
+- **Om näringsfastighet:** `SKA deklarera` (netto ≥ 1 500 kr), `FÅR välja (underskott)`
   (netto < 0) eller `Behöver inte` (0–1 499 kr).
-- **Privat:** belopp att ta upp i ruta 7.3 efter schablonavdrag, ränta över 1 500 kr
-  för ruta 7.2, avdrag i ruta 8.1, och om KU73 kan behövas.
+- **Om privatbostad:** belopp att ta upp i ruta 7.3 efter schablonavdrag, ränta över
+  1 500 kr för ruta 7.2, avdrag i ruta 8.1, och KU73-belopp per ägare.
 
 ---
 
