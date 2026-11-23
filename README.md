@@ -33,10 +33,10 @@ verktyget räknar ut.
 
 ```
 fastighet;andel;typ
-Byn 1:3;0,167971461;naring
-Byn 2:7;0,128922348;privat
-Byn 4:1;0,065191174;naring
-Byn 5:2;0,033548309;
+Byn 1:3;0.167971461;naring
+Byn 2:7;0.128922348;privat
+Byn 4:1;0.065191174;naring
+Byn 5:2;0.033548309;
 ```
 
 **Indata 2: bokslutets siffror**, ifyllda i notebooken:
@@ -144,16 +144,18 @@ fastighetens netto 1 400 kr behöver ingen av dem ta upp något.
 Du behöver **bara några summor ur bokslutets resultaträkning**, inga enskilda
 transaktioner.
 
-1. **`data/andelar.csv`**: ett andelstal per rad, med komma eller punkt som
-   decimaltecken. Filen i repot är ett exempel. Byt ut den mot er förenings
+1. **`data/andelar.csv`**: ett andelstal per rad, med **punkt** som decimaltecken,
+   till exempel `0.8373663`. En första rad med rubriken `andel` gör filen lättare
+   att läsa men är frivillig. Komma fungerar också, men då visar GitHub och Excel
+   ofta talet uppdelat i två kolumner. Filen i repot är ett exempel. Byt ut den mot er förenings
    andelar. Vill du ha med fler uppgifter använder du en tabell med semikolon och
    rubrikrad:
 
    ```
    fastighet;andel;typ
-   Byn 1:3;0,1679;naring
-   Byn 2:7;0,0652;privat
-   Byn 4:1;0,0335;
+   Byn 1:3;0.1679;naring
+   Byn 2:7;0.0652;privat
+   Byn 4:1;0.0335;
    ```
 
    - `fastighet` är frivillig.
