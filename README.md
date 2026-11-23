@@ -95,12 +95,16 @@ fiskekort.
 flowchart LR
     A["Räkenskapsåret<br/>jan–dec"] --> B["Bokslut"]
     B --> C["Årsmöte i mars<br/>fastställer resultatet"]
-    C --> D["Notebooken räknar<br/>andel per fastighet"]
+    C -->|"Bokslutets intäkter<br/>och kostnader"| D["Notebooken räknar<br/>andel per fastighet"]
+    M["Föreningens matrikel<br/>(andelsförteckning)<br/>data/andelar.csv"] -->|"Andelstal per<br/>fastighet"| D
     D --> E["Utskick till<br/>delägarna"]
     E --> F["Delägarna deklarerar<br/>i maj"]
 ```
 
-Årsmötet i mars flyttar inte inkomsten till ett annat år. Verksamhetsåret 2026
+Notebooken behöver två saker: **föreningens matrikel**, alltså förteckningen över
+delägarfastigheter och andelstal, i `data/andelar.csv`, och **bokslutets
+intäkter och kostnader**. Uppdatera matrikeln när fastigheter byter ägare eller
+delas. Årsmötet i mars flyttar inte inkomsten till ett annat år. Verksamhetsåret 2026
 deklareras i maj 2027, och en utgift i januari 2027 hör till 2027.
 
 ### Behöver jag som delägare deklarera?
@@ -183,7 +187,20 @@ fastigheten hamnar över eller under gränsen. Det som påverkar är fastigheten
 **typ** (se ovan) och föreningens resultat. Den som ändå deklarerar andelen tar
 upp den i sin näringsverksamhet tillsammans med sina egna intäkter och kostnader.
 
-Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget.
+Kräver Python 3 och `matplotlib`. `ipywidgets` behövs bara för reglaget
+(`pip install -r requirements.txt`).
+
+### Kör i webbläsaren utan installation
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/HuggeK/beskattningFVOF/HEAD?labpath=beskattning.ipynb)
+
+- **Binder** (mybinder.org) startar notebooken i webbläsaren direkt från GitHub.
+  Klicka på knappen ovan. Första starten kan ta några minuter. Ladda upp er egen
+  matrikel som `data/andelar.csv`, fyll i `BOKSLUT` och kör alla celler. Ändringar
+  sparas **inte**, så ladda ner `utdata/` innan du stänger. För en annan förening:
+  forka repot och byt `HuggeK/beskattningFVOF` i länken.
+- **Google Colab** kan också öppna notebooken från GitHub, men kräver ett
+  Google-konto.
 
 **Moms:** ta beloppen direkt från resultaträkningen. Där är de redan rätt. Hos en
 momsregistrerad förening är de utan moms. Hos en förening som inte är
