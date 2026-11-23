@@ -23,10 +23,9 @@ jobs:
         run: python -m pip install -r jupyterlite/requirements.txt
       - name: Collect content
         run: |
-          mkdir -p content/data content/docs
-          cp beskattning.ipynb README.md content/
+          mkdir -p content/data
+          cp beskattning.ipynb content/
           cp data/andelar.csv content/data/
-          cp docs/beskattningskurva.png content/docs/
       - name: Build the JupyterLite site
         run: jupyter lite build --contents content --output-dir dist
       - name: Upload artifact
