@@ -195,6 +195,36 @@ upp den i sin näringsverksamhet tillsammans med sina egna intäkter och kostnad
 
 Lokalt kräver notebooken Python 3 och `matplotlib` (`pip install -r requirements.txt`).
 
+### Alla inställningar
+
+Allt du kan ändra finns i den första kodcellen, under rubriken **1. Inställningar**.
+Resten av notebooken läser bara därifrån.
+
+| Inställning | Exempel | Vad den gör |
+|---|---|---|
+| `AR` | `2026` | Räkenskapsåret. Styr namnet på `utdata/underlag_<år>.csv` och rubrikerna. |
+| `BOKSLUT` | se ovan | Bokslutets summor. Belopp får skrivas som tal (`95000`) eller text (`"95 000,50"`). |
+| `ANDELSFIL` | `"data/andelar.csv"` | Var matrikeln ligger. |
+| `UTDATAMAPP` | `"utdata"` | Var diagrammet och underlaget sparas. |
+| `ANDELSTYP` | `"andel"` | `"andel"` när andelstalen summerar till 1. `"mantal"` när matrikeln har mantal: då räknas varje fastighets andel som dess mantal delat med summan av alla mantal. |
+| `GRANS_NARING` | `1500` | Beloppsgränsen för näringsfastigheter: ett netto under gränsen behöver inte tas upp. |
+| `GRANS_RANTA_PRIVAT` | `1500` | Gränsen för privatbostäders andel av räntan (ruta 7.2) och för när KU73 behövs. |
+| `SCHABLON_PRIVAT` | `40000` | Schablonavdraget för privatbostäder, per fastighet och år. |
+| `SCHABLON_PRIVAT_PROCENT` | `"0.20"` | Den procentuella delen av schablonavdraget (20 % av intäkten). |
+| `SKATTESATS` | `{"lag": 0.206, "trolig": 0.50, "hog": 0.65}` | Satserna för det uppskattade skattespannet för näringsfastigheter, se [Uppskattad extra skatt](#uppskattad-extra-skatt). |
+| `SKATTESATS_KAPITAL` | `0.30` | Skattesatsen för privatbostäder (inkomst av kapital). |
+| `SIM_MAX_RESULTAT` | `150000` | Hur högt resultat beskattningskurvan simulerar, i kronor. Kurvan går ändå minst till 1,2 × årets resultat. Höj den om du vill se scenarier längre upp. |
+| `SCENARIER` | `[10000, 25000, 50000, 100000]` | Resultat att jämföra med årets, till exempel olika budgetalternativ. Visas i scenariotabellen och som linjer i diagrammet. |
+
+**Kontrollera gränserna varje år.** `GRANS_NARING`, `GRANS_RANTA_PRIVAT` och
+schablonavdragen bestäms av Skatteverket och kan ändras. Det är de enda
+inställningarna som behöver ses över även när föreningen inte har ändrat något.
+
+**Andelstalen** i `data/andelar.csv` tolkas exakt, utan avrundning. De får skrivas med
+punkt (`0.1679`) eller komma (`0,1679`) och som bråk (`5/64`). Avsnitt 2 skriver ut
+summan och varnar om andelarna inte summerar till 1, så att ett skrivfel eller en
+mantalsfil med fel `ANDELSTYP` syns direkt.
+
 ### Kör i webbläsaren utan installation
 
 [![JupyterLite](https://jupyterlite.rtfd.io/en/latest/_static/badge.svg)](https://huggek.github.io/beskattningFVOF/lab/index.html?path=beskattning.ipynb)
